@@ -40,8 +40,8 @@
 
 ## -kernel sync_nodes_mandatory '["foo@127.0.0.2", "bar@127.0.0.3"]'
 -kernel pidfile '"etc/server.pid"'
--kernel sync_nodes_timeout '15000'
--kernel sync_nodes_optional '["<%= release_name %>@${FRIEND}"]'
+-kernel sync_nodes_timeout 60000
+-kernel sync_nodes_otional '["<%= release_name %>@10.50.1.1", "<%= release_name %>@10.50.1.2"]'
 -kernel inet_dist_listen_min 40001
 -kernel inet_dist_listen_max 40100
 
