@@ -1,0 +1,48 @@
+## Name of the node
+-name <%= release_name %>@${HOSTNAME}
+
+## Cookie for distributed erlang
+-setcookie <%= release.profile.cookie %>
+
+## Heartbeat management; auto-restarts VM if it dies or becomes unresponsive
+## (Disabled by default..use with caution!)
+-heart
+
+## Enables or disables the kernel poll functionality if the emulator supports it. 
+## Default is false (disabled). 
+## If the emulator does not support kernel poll, 
+## and the +K flag is passed to the emulator, 
+## a warning is issued at startup.
++K true
+
++A 32
+
++P 1000000
+
+# Enable SMP automatically based on availability
+-smp enable
+
+## Distribution buffer busy limit (dist_buf_busy_limit)
+## +zdbbl 8192
+
+## Increase number of concurrent ports/sockets
+-env ERL_MAX_PORTS 1000000
+
+## Tweak GC to run more often
+-env ERL_FULLSWEEP_AFTER 10
+
+## Increase logfile size to 10M
+-env RUN_ERL_LOG_MAXSIZE 10000000
+
+## Sets  the number of scheduler threads to create and scheduler
+## threads to set online when SMP support has been enabled.
+#+S 2:2
+
+## -kernel sync_nodes_mandatory '["foo@127.0.0.2", "bar@127.0.0.3"]'
+-kernel pidfile '"etc/server.pid"'
+
+## -kernel inet_dist_listen_min 40001
+## -kernel inet_dist_listen_max 40100
+
+# ERL_EPMD_ADDRESS=127.0.0.1
+# ERL_EPMD_PORT=8384

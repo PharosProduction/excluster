@@ -1,0 +1,4 @@
+title = "Excluster Prod Configuration"
+
+[core]
+demo_value = "Hello from Prod Core!"
