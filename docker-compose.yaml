@@ -12,7 +12,7 @@ x-elixir-def:
   build:
     dockerfile: prod.Dockerfile
     context: .
-    # command: ["/opt/app/_build/prod/rel/excluster/bin/excluster", "console"]
+  command: ["/opt/app/_build/prod/rel/excluster/bin/excluster", "console"]
 
 services:
   elixir-1:
