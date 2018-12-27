@@ -5,4 +5,3 @@ config :api_mobile, ApiMobileWeb.Endpoint,
   catch_errors: true,
   code_reloader: false,
   check_origin: false
-  

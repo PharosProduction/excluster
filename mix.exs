@@ -19,7 +19,9 @@ defmodule Excluster.MixProject do
       ],
       dialyzer: [
         plt_add_deps: :transitive,
-        ignore_warnings: "dialyzer.ignore"
+        ignore_warnings: "dialyzer.ignore",
+        list_unused_filters: true,
+        halt_exit_status: true
       ],
 
       # Docs

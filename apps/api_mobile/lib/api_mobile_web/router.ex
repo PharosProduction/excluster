@@ -19,24 +19,20 @@ defmodule ApiMobileWeb.Router do
   scope "/api", ApiMobileWeb do
     pipe_through :api
 
-    get "/demo", DemoController, :demo
-    get "/nodes", DemoController, :nodes
-    post "/ping", DemoController, :ping
-    get "/names", DemoController, :names
+    get "/hostname", ClusterController, :hostname
+    get "/nodes", ClusterController, :nodes
+    post "/ping", ClusterController, :ping
+    get "/names", ClusterController, :names
   end
 
-  defp handle_errors(%Plug.Conn{status: status} = conn, %{
-         kind: _kind,
-         reason: _reason,
-         stack: _stack
-       })
-       when status in [406, 500] do
+  defp handle_errors(%Plug.Conn{status: status} = conn, %{kind: _, reason: _, stack: _}) when status in [406, 500] do
     Logger.log(:info, fn ->
-      Jason.encode!(%{
+      %{
         "log_type" => "error",
         "request_params" => conn.params,
         "request_id" => Logger.metadata()[:request_id]
-      })
+      }
+      |> Jason.encode!
     end)
 
     send_resp(conn, status, "")
