@@ -12,6 +12,7 @@ x-elixir-def:
   build:
     dockerfile: prod.Dockerfile
     context: .
+    # command: ["/opt/app/_build/prod/rel/excluster/bin/excluster", "console"]
 
 services:
   elixir-1:
@@ -20,6 +21,7 @@ services:
     container_name: elixir-1
     environment:
       HOSTNAME: 10.50.1.1
+      FRIEND: 10.50.1.2
     networks:
       elixir:
         ipv4_address: 10.50.1.1
@@ -30,16 +32,7 @@ services:
     container_name: elixir-2
     environment:
       HOSTNAME: 10.50.1.2
+      FRIEND: 10.50.1.1
     networks:
       elixir:
         ipv4_address: 10.50.1.2
-        
-  elixir-3:
-    << : *elixir-def
-    hostname: elixir-3
-    container_name: elixir-3
-    environment:
-      HOSTNAME: 10.50.1.3
-    networks:
-      elixir:
-        ipv4_address: 10.50.1.3
