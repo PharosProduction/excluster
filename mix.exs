@@ -58,6 +58,7 @@ defmodule Excluster.MixProject do
   # MIX_ENV=test mix cover
   # mix xref unreachable
   # mix xref deprecated
+  # HOSTNAME=127.0.0.1 REPLACE_OS_VARS=true sh _build/prod/rel/excluster/bin/excluster console
   defp aliases do
     [
       credo: ["credo --strict"],

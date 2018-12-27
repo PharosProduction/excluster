@@ -7,6 +7,8 @@ defmodule ApiMobileWeb.DemoController do
 
   @spec show(Plug.Conn.t(), map) :: Plug.Conn.t()
   def show(%{assigns: %{version: :v1}} = conn, _params) do
-    render(conn, "v1.show.json", store: %{a: "a", b: "b"})
+    resp = Core.hello()
+
+    render(conn, "v1.show.json", demo: %{hello: resp})
   end
 end

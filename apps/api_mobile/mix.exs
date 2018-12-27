@@ -41,7 +41,9 @@ defmodule ApiMobile.MixProject do
       {:plug, "~> 1.7"},
       {:cowboy, "~> 2.6"},
       {:prometheus_ex, "~> 3.0"},
-      {:prometheus_plugs, "~> 1.1"}
+      {:prometheus_plugs, "~> 1.1"},
+
+      {:core, in_umbrella: true}
     ]
   end
 end

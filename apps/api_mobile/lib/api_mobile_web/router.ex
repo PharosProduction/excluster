@@ -19,7 +19,7 @@ defmodule ApiMobileWeb.Router do
   scope "/api", ApiMobileWeb do
     pipe_through :api
 
-    get "/demo", StoreController, :show
+    get "/demo", DemoController, :show
   end
 
   defp handle_errors(%Plug.Conn{status: status} = conn, %{
