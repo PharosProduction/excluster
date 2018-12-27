@@ -40,9 +40,13 @@
 
 ## -kernel sync_nodes_mandatory '["foo@127.0.0.2", "bar@127.0.0.3"]'
 -kernel pidfile '"etc/server.pid"'
+-kernel sync_nodes_timeout 15000
+-kernel sync_nodes_optional '["stage@172.17.0.2", "stage@172.17.0.3"]'
+-kernel inet_dist_listen_min 40001
+-kernel inet_dist_listen_max 40100
 
-## -kernel inet_dist_listen_min 40001
-## -kernel inet_dist_listen_max 40100
+# ERL_EPMD_ADDRESS=127.0.0.1
+# ERL_EPMD_PORT=8384
 
 # ERL_EPMD_ADDRESS=127.0.0.1
 # ERL_EPMD_PORT=8384
