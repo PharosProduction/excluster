@@ -17,7 +17,10 @@ defmodule Excluster.MixProject do
         "coveralls.post": :test,
         "coveralls.html": :test
       ],
-      dialyzer: [plt_add_deps: :transitive],
+      dialyzer: [
+        plt_add_deps: :transitive,
+        ignore_warnings: "dialyzer.ignore"
+      ],
 
       # Docs
       name: "Excluster",
@@ -43,10 +46,13 @@ defmodule Excluster.MixProject do
     ]
   end
 
+  # mix deps.get
+  # mix deps.compile
   # mix deps.clean mime --build
   # mix format
   # mix docs
   # mix test
+  # mix dialyzer --format dialyzer
   # mix dialyzer
   # mix credo
   # MIX_ENV=test mix cover

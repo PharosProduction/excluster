@@ -1,0 +1,6 @@
+apps/api_mobile/lib/api_mobile/metrics/metrics_exporter.ex:4: Guard test tuple_size(__@18::#{'__exception__':='true', '__struct__':=_, _=>_}) can never succeed
+apps/api_mobile/lib/api_mobile/metrics/metrics_exporter.ex:4: Guard test tuple_size(__@11::#{'__exception__':='true', '__struct__':=_, _=>_}) can never succeed
+apps/api_mobile/lib/api_mobile/metrics/metrics_exporter.ex:4: Guard test tuple_size(__@11::#{'__exception__':='true', '__struct__':=_, _=>_}) can never succeed
+apps/api_mobile/lib/api_mobile/metrics/metrics_exporter.ex:4: Guard test tuple_size(__@5::#{'__exception__':='true', '__struct__':=_, _=>_}) can never succeed
+apps/api_mobile/lib/api_mobile_web/router.ex:1: Function '__pipe_through0__'/1 has no local return
+apps/api_mobile/lib/api_mobile_web/router.ex:13: The call 'Elixir.Phoenix.Controller':accepts(__@1::any(),['v1',...]) breaks the contract ('Elixir.Plug.Conn':t(),[binary()]) -> 'Elixir.Plug.Conn':t() | no_return()
