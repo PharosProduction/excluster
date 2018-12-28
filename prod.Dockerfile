@@ -7,7 +7,7 @@ RUN apk add --update git openssh build-base wget bash
 
 WORKDIR /opt/app
 
-ENV REFRESHED_AT=2018-12-27-15
+ENV REFRESHED_AT=2018-12-27-17
 
 COPY . /opt/app/
 # RUN git clone https://github.com/PharosProduction/excluster /opt/app
