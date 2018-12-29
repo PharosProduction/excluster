@@ -6,5 +6,5 @@ if  [ $elixir -ge 1 ]
 then
 	echo "elixir works"
 else
-	echo 1
+	exit 1
 fi

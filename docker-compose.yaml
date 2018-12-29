@@ -18,9 +18,14 @@ services:
     << : *elixir-def
     hostname: elixir-1.local
     container_name: elixir-1
+    healthcheck:
+      test: sh /opt/app/check.sh
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
     environment:
       HOSTNAME: 10.50.1.1
-      # FRIEND: 10.50.1.2
     ports:
       - '40001:4000'
     networks:
@@ -32,6 +37,12 @@ services:
     << : *elixir-def
     hostname: elixir-2.local
     container_name: elixir-2
+    healthcheck:
+      test: sh /opt/app/check.sh
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
     environment:
       HOSTNAME: 10.50.1.2
     ports:
@@ -46,7 +57,14 @@ services:
   elixir-3:
     << : *elixir-def
     hostname: elixir-3.local
+    
     container_name: elixir-3
+    healthcheck:
+      test: sh /opt/app/check.sh
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
     environment:
       HOSTNAME: 10.50.1.3
     ports:
