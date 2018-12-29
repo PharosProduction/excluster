@@ -41,7 +41,7 @@
 -config /opt/app/hosts.config
 
 -kernel pidfile '"etc/server.pid"'
-##-kernel sync_nodes_optional '["excluster@10.50.1.1", "excluster@10.50.1.2"]'
+##-kernel sync_nodes_optional '["<%= release_name %>@10.50.1.1", "<%= release_name %>@10.50.1.2"]'
 ##-kernel sync_nodes_timeout '15000'
 -kernel inet_dist_listen_min 40001
 -kernel inet_dist_listen_max 40100

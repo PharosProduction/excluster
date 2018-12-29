@@ -16,7 +16,7 @@ x-elixir-def:
 services:
   elixir-1:
     << : *elixir-def
-    hostname: elixir-1
+    hostname: elixir-1.local
     container_name: elixir-1
     environment:
       HOSTNAME: 10.50.1.1
@@ -30,11 +30,10 @@ services:
 
   elixir-2:
     << : *elixir-def
-    hostname: elixir-2
+    hostname: elixir-2.local
     container_name: elixir-2
     environment:
       HOSTNAME: 10.50.1.2
-      # FRIEND: 10.50.1.1
     ports:
       - '40002:4000'
     networks:
@@ -46,11 +45,10 @@ services:
 
   elixir-3:
     << : *elixir-def
-    hostname: elixir-3
+    hostname: elixir-3.local
     container_name: elixir-3
     environment:
       HOSTNAME: 10.50.1.3
-      # FRIEND: 10.50.1.1
     ports:
       - '40003:4000'
     networks:
