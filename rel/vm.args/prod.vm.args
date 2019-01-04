@@ -38,7 +38,7 @@
 ## threads to set online when SMP support has been enabled.
 #+S 2:2
 
--config /opt/app/hosts.config
+-config etc/hosts.config
 
 -kernel pidfile '"etc/server.pid"'
 -kernel inet_dist_listen_min 40001

@@ -25,7 +25,7 @@ services:
     networks:
       elixir:
         ipv4_address: 10.50.1.1
-    command: ["/opt/excluster/_build/prod/rel/excluster/bin/excluster", "foreground"]
+    command: ["bin/excluster", "foreground"]
 
   elixir-2:
     << : *elixir-def
@@ -40,7 +40,7 @@ services:
         ipv4_address: 10.50.1.2
     tty: true
     # command: ["/bin/bash"]
-    command: ["/opt/app/_build/prod/rel/excluster/bin/excluster", "foreground"]
+    command: ["bin/excluster", "foreground"]
 
   elixir-3:
     << : *elixir-def

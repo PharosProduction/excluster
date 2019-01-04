@@ -1,22 +1,57 @@
-FROM elixir:1.7.4-alpine
+FROM elixir:1.7.4-alpine as builder
+
+LABEL company="Pharos Production Inc."
+LABEL version="1.0.0"
 
 ENV ELIXIR_VERSION="v1.7.4" \
-  LANG=C.UTF-8
+  LANG=C.UTF-8 \
+  REFRESHED_AT=2019-01-04-1
+ENV DEBIAN_FRONTEND noninteractive
 
-RUN apk add --update git openssh build-base wget bash
+RUN apk add --update \
+  git \
+  build-base \
+  wget \
+  bash
 
-WORKDIR /opt/excluster/
-COPY . /opt/excluster/
-# RUN git clone https://github.com/PharosProduction/excluster /opt/excluster
+WORKDIR /opt/$excluster_build/
+COPY . /opt/$excluster_build/
+# RUN wget -O - https://github.com/PharosProduction/excluster/tarball/master | tar xz \
+#   && mv PharosProduction-excluster-* excluster \
+#   && cd excluster
 
 RUN mix local.hex --force && mix local.rebar --force
-RUN MIX_ENV=prod mix do deps.get, deps.compile --force
+RUN MIX_ENV=prod mix do deps.get --only prod, deps.compile --force --only prod
 RUN MIX_ENV=prod mix release --env=prod
 
-COPY ./.hosts.erlang /opt/excluster/_build/prod/rel/excluster/.hosts.erlang
+RUN mkdir /opt/excluster \
+  && tar xvzf ./_build/prod/rel/excluster/releases/1.0.0/excluster.tar.gz -C /opt/excluster
+WORKDIR /opt/excluster
+RUN rm -rf /opt/excluster_build
+COPY ./rel/config/hosts.config ./etc/hosts.config
+COPY ./rel/config/.hosts.erlang ./.hosts.erlang
+
+CMD ["/bin/bash"]
+
+#############################################################
+
+FROM alpine:3.8
+
+LABEL company="Pharos Production Inc."
+LABEL version="1.0.0"
+
+ENV LANG=C.UTF-8 \
+  REFRESHED_AT=2019-01-04-1
+ENV DEBIAN_FRONTEND noninteractive
 
 ENV REPLACE_OS_VARS=true \
-  HOSTNAME=${HOSTNAME} \
-  OTP_ROOT=/opt/excluster/_build/prod/rel/excluster/
+  HOSTNAME=${HOSTNAME}
+
+RUN apk add --update \
+  bash \
+  openssl
+
+COPY --from=builder /opt/excluster /usr/local/bin/excluster
+WORKDIR /usr/local/bin/excluster
 
 CMD ["/bin/bash"]
