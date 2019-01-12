@@ -13,6 +13,10 @@ defmodule Core do
     Core.ActionServer.contents("John")
   end
 
+  def stop do
+    :init.stop()
+  end
+
   @spec hostname :: {:ok, binary}
   def hostname do
     name = :inet.gethostname()

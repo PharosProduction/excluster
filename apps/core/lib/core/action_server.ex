@@ -57,8 +57,11 @@ defmodule Core.ActionServer do
   def init(id) do
     IO.puts "NODE: #{inspect hostname()}"
     IO.puts "VIA TUPLE, #{inspect id}"
+    Process.flag(:trap_exit, true)
+    content = Core.StateHandoff.pickup(id)
+    IO.puts "HANDOFF: #{inspect content}"
     IO.puts "--------------------------------------"
-    {:ok, {id, []}}
+    {:ok, {id, content}}
   end
 
   @impl true
@@ -76,5 +79,15 @@ defmodule Core.ActionServer do
     IO.puts "STATE #{inspect state}"
     IO.puts "--------------------------------------"
     {:noreply, {id, content ++ new_content}}
+  end
+
+  @impl true
+  def terminate(reason, {id, content} = state) do
+    IO.puts "NODE: #{inspect hostname()}"
+    IO.puts "TERMINATE #{inspect reason} STATE #{inspect state}"
+    IO.puts "--------------------------------------"
+
+    Core.StateHandoff.handoff(id, content)
+    :ok
   end
 end

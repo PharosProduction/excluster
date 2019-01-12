@@ -14,6 +14,7 @@ defmodule Core.Application do
         IO.puts "RES1: #{inspect res1}"
         res2 = Horde.Cluster.join_hordes(Core.Registry, {Core.Registry, node})
         IO.puts "RES2: #{inspect res2}"
+        :ok = Core.StateHandoff.join(node)
       end)
     end]}
 
@@ -31,6 +32,7 @@ defmodule Core.Application do
     }
 
     children = [
+      {Core.StateHandoff, []},
       {Horde.Registry, [name: Core.Registry, keys: :unique]},
       {Horde.Supervisor, [name: Core.ActionSupervisor, strategy: :one_for_one]},
       horde_connector
