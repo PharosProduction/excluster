@@ -3,10 +3,11 @@ FROM elixir:1.7.4-alpine as builder
 LABEL company="Pharos Production Inc."
 LABEL version="1.0.0"
 
-ENV ELIXIR_VERSION="v1.7.4" \
-  LANG=C.UTF-8 \
-  REFRESHED_AT=2019-01-04-1
-ENV DEBIAN_FRONTEND noninteractive
+ENV LANG C.UTF-8 \
+  REFRESHED_AT 2019-01-04-1 \
+  TERM xterm \
+  DEBIAN_FRONTEND noninteractive
+ENV ELIXIR_VERSION v1.7.4
 
 RUN apk add --update \
   git \
@@ -21,7 +22,7 @@ COPY . /opt/$excluster_build/
 #   && cd excluster
 
 RUN mix local.hex --force && mix local.rebar --force
-RUN MIX_ENV=prod mix do deps.get --only prod, deps.compile --force --only prod
+RUN MIX_ENV=prod mix do deps.get --only prod, deps.compile --force
 RUN MIX_ENV=prod mix release --env=prod
 
 RUN mkdir /opt/excluster \
@@ -40,9 +41,10 @@ FROM alpine:3.8
 LABEL company="Pharos Production Inc."
 LABEL version="1.0.0"
 
-ENV LANG=C.UTF-8 \
-  REFRESHED_AT=2019-01-04-1
-ENV DEBIAN_FRONTEND noninteractive
+ENV LANG C.UTF-8 \
+  REFRESHED_AT 2019-01-04-1 \
+  TERM xterm \
+  DEBIAN_FRONTEND noninteractive
 
 ENV REPLACE_OS_VARS=true \
   HOSTNAME=${HOSTNAME}

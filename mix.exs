@@ -55,7 +55,7 @@ defmodule Excluster.MixProject do
   # mix docs
   # mix test
   # mix dialyzer --format dialyzer
-  # mix dialyzer
+  # mix dialyzer --halt-exit-status
   # mix credo
   # MIX_ENV=test mix cover
   # mix xref unreachable

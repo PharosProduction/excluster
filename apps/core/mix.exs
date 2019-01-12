@@ -31,8 +31,8 @@ defmodule Core.MixProject do
   def application do
     [
       mod: {Core.Application, []},
-      env: [],
       registered: [Excluster.Core],
+      env: [],
       extra_applications: [
         :sasl,
         :logger,
@@ -45,6 +45,7 @@ defmodule Core.MixProject do
 
   defp deps do
     [
+      {:horde, "~> 0.4.0-rc.1"},
       {:toml, "~> 0.5"},
       {:prometheus, "~> 4.2", override: true},
       {:prometheus_ex, "~> 3.0"},

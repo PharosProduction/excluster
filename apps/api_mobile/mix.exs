@@ -9,7 +9,7 @@ defmodule ApiMobile.MixProject do
       config_path: "../../config/config.exs",
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
-      elixir: "~> 1.5",
+      elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       build_embedded: Mix.env() == :prod,
@@ -24,7 +24,13 @@ defmodule ApiMobile.MixProject do
       mod: {ApiMobile.Application, []},
       env: [],
       registered: [Excluster.ApiMobile],
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [
+        :sasl,
+        :logger,
+        :runtime_tools,
+        :observer,
+        :wx
+      ]
     ]
   end
 
@@ -42,6 +48,7 @@ defmodule ApiMobile.MixProject do
       {:cowboy, "~> 2.6"},
       {:prometheus_ex, "~> 3.0"},
       {:prometheus_plugs, "~> 1.1"},
+      
       {:core, in_umbrella: true}
     ]
   end

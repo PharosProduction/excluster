@@ -9,10 +9,8 @@ defmodule ApiMobile.Application do
     Metrics.Setup.setup()
 
     children = [
-      ApiMobileWeb.Endpoint
-      # {ApiMobile.Worker, arg},
+      ApiMobileWeb.Endpoint,
     ]
-
     opts = [strategy: :one_for_one, name: ApiMobile.Supervisor]
     Supervisor.start_link(children, opts)
   end

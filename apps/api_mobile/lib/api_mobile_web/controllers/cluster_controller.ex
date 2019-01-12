@@ -3,13 +3,34 @@ defmodule ApiMobileWeb.ClusterController do
 
   use ApiMobileWeb, :controller
 
+  alias ApiMobile.Cluster
+
   # Public
+
+  def start_server(%{assigns: %{version: :v1}} = conn, _params) do
+    Core.start_server()
+
+    send_resp(conn, :ok, "")
+  end
+
+  def cast_server(%{assigns: %{version: :v1}} = conn, _params) do
+    Core.cast_server()
+
+    send_resp(conn, :ok, "")
+  end
+
+  def call_server(%{assigns: %{version: :v1}} = conn, _params) do
+    Core.call_server()
+    
+    send_resp(conn, :ok, "")
+  end
 
   @spec hostname(Plug.Conn.t(), map) :: Plug.Conn.t()
   def hostname(%{assigns: %{version: :v1}} = conn, _params) do
-    {:ok, host} = Core.hostname()
+    {:ok, host_api} = Cluster.hostname()
+    {:ok, host_core} = Core.hostname()
 
-    render(conn, "v1.hostname.json", cluster: host)
+    render(conn, "v1.hostname.json", cluster: %{host_api: host_api, host_core: host_core})
   end
 
   @spec nodes(Plug.Conn.t(), map) :: Plug.Conn.t()
