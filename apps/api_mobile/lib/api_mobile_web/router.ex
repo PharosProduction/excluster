@@ -19,10 +19,10 @@ defmodule ApiMobileWeb.Router do
   scope "/api", ApiMobileWeb do
     pipe_through :api
 
-    get "/start", ClusterController, :start_server
-    get "/cast", ClusterController, :cast_server
-    get "/call", ClusterController, :call_server
-    get "/stop", ClusterController, :stop_server
+    get "/start", ActionController, :start_server
+    get "/cast", ActionController, :cast_server
+    get "/call", ActionController, :call_server
+    get "/stop", ActionController, :stop_server
 
     get "/hostname", ClusterController, :hostname
     get "/nodes", ClusterController, :nodes
