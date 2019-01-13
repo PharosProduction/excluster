@@ -1,128 +1,66 @@
 defmodule Core.ActionServer do
-  use GenServer
+  @moduledoc false
 
-  require Logger
+  use GenServer, shutdown: 10_000, restart: :permanent
+
+  alias Core.Counters
 
   # Public
 
-  def child_spec(id) do
-    %{
-      id: id,
-      start: {__MODULE__, :start_link, [id]},
-      shutdown: 10_000,
-      restart: :permanent
-    }
+  def child_spec([{:id, id} | params] = args) do
+    start = {__MODULE__, :start_link, [args]}
+    %{id: id, start: start}
   end
 
-  def start_link(id) do
-    IO.puts "NODE: #{inspect hostname()}"
-    IO.puts "START LINK, #{inspect id}"
-    IO.puts "--------------------------------------"
-    GenServer.start_link(__MODULE__, id, name: via_tuple(id))
+  def start_link([{:id, id} | params] = args) do 
+    GenServer.start_link(__MODULE__, args, name: via_tuple(id))
   end
 
-  def how_many?(name \\ __MODULE__) do
-    GenServer.call(via_tuple(name), :how_many?)
-  end
+  def read(id, params), do: GenServer.call(via_tuple(id), {:read, params})
 
-  def add(id, content) do
-    IO.puts "NODE: #{inspect hostname()}"
-    IO.puts "ADD, #{inspect id}, #{inspect content}"
-    IO.puts "--------------------------------------"
-    GenServer.cast(via_tuple(id), {:add, content})
-  end
-
-  def contents(id) do
-    IO.puts "NODE: #{inspect hostname()}"
-    IO.puts "CONTENTS, #{inspect id}"
-    IO.puts "--------------------------------------"
-    GenServer.call(via_tuple(id), {:contents})
-  end
-  
-  # Private
-
-  defp via_tuple(id) do
-    IO.puts "NODE: #{inspect hostname()}"
-    IO.puts "VIA TUPLE, #{inspect id}"
-    IO.puts "--------------------------------------"
-    {:via, Horde.Registry, {Core.Registry, id}}
-  end
-
-  defp get_global_counter() do
-    case Horde.Registry.meta(Core.Registry, "count") do
-      {:ok, count} ->
-        count
-
-      :error ->
-        put_global_counter(0)
-        get_global_counter()
-    end
-  end
-
-  defp put_global_counter(counter_value) do
-    :ok = Horde.Registry.put_meta(Core.Registry, "count", counter_value)
-    counter_value
-  end
-
-  def hostname do
-    name = :inet.gethostname()
-    |> Kernel.elem(1)
-    |> List.to_string()
-
-    {:ok, name}
-  end
+  def write(id, value), do: GenServer.cast(via_tuple(id), {:write, value})
 
   # Callbacks
 
   @impl true
-  def init(id) do
-    IO.puts "NODE: #{inspect hostname()}"
-    IO.puts "VIA TUPLE, #{inspect id}"
+  def init([{:id, id} | params] = args) do
     Process.flag(:trap_exit, true)
-    content = Core.StateHandoff.pickup(id)
-    IO.puts "HANDOFF: #{inspect content}"
-    IO.puts "--------------------------------------"
 
-    send(self(), :say_hello)
+    state = Core.StateHandoff.pickup(id)
+    |> case do
+      [] -> %{value: "some value"}
+      restored -> restored
+    end
+    IO.puts "INIT ID: #{inspect id}"
+    IO.puts "INIT PARAMS: #{inspect params}"
+    IO.puts "INIT STATE: #{inspect state}"
 
-    {:ok, {id, content, get_global_counter()}}
+    {:ok, {id, state}}
   end
 
   @impl true
-  def handle_call({:contents}, _from, {id, content, counter} = state) do
-    IO.puts "NODE: #{inspect hostname()}"
-    IO.puts "CALL, #{inspect state}"
-    IO.puts "--------------------------------------"
-    {:reply, content, state}
-  end
-  def handle_call(:how_many?, _from, {id, content, counter} = state) do
-    {:reply, counter, state}
+  def handle_call({:read, params}, _from, {id, state}) do
+    Counters.inc_counter(:read)
+
+    %{value: value} = state
+    {:reply, value, {id, state}}
   end
 
   @impl true
-  def handle_info(:say_hello, {id, content, counter} = state) do
-    Logger.info("HELLO from node #{inspect(Node.self())}")
-    Process.send_after(self(), :say_hello, 5000)
+  def handle_cast({:write, value}, {id, state}) do
+    Counters.inc_counter(:write)
 
-    {:noreply, {id, content, put_global_counter(counter + 1)}}
-  end
-  
-  @impl true
-  def handle_cast({:add, new_content}, {id, content, counter} = state) do
-    IO.puts "NODE: #{inspect hostname()}"
-    IO.puts "CAST, #{inspect new_content}"
-    IO.puts "STATE #{inspect state}"
-    IO.puts "--------------------------------------"
-    {:noreply, {id, content ++ new_content, counter}}
+    new_state = put_in(state[:value], value)
+    {:noreply, {id, new_state}}
   end
 
   @impl true
-  def terminate(reason, {id, content, counter} = state) do
-    IO.puts "NODE: #{inspect hostname()}"
-    IO.puts "TERMINATE #{inspect reason} STATE #{inspect state}"
-    IO.puts "--------------------------------------"
-
-    Core.StateHandoff.handoff(id, content)
+  def terminate(reason, {id, state}) do
+    Core.StateHandoff.handoff(id, state)
     :ok
   end
+
+  # Private
+
+  defp via_tuple(id), do: {:via, Horde.Registry, {Core.Registry, id}}
 end

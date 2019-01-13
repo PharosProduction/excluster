@@ -1,19 +1,14 @@
 defmodule Core do
   @moduledoc false
 
-  def start_server do
-    Horde.Supervisor.start_child(Core.ActionSupervisor, {Core.ActionServer, "John"})
+  def start_server(id \\ "id123") do
+    args = [id: id, arg1: "arg1", arg2: "arg2"]
+    Horde.Supervisor.start_child(Core.ActionSupervisor, {Core.ActionServer, args})
   end
 
-  def cast_server do
-    Core.ActionServer.add("John", [1, 2])
-  end
+  def read_server(param \\ nil, id \\ "id123"), do: Core.ActionServer.read(id, param)
 
-  def call_server do
-    Core.ActionServer.contents("John")
-  end
+  def write_server(value, id \\ "id123"), do: Core.ActionServer.write(id, value)
 
-  def stop do
-    :init.stop()
-  end
+  def terminate_node, do: :init.stop()
 end
