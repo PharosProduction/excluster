@@ -3,8 +3,17 @@ defmodule Core.Application do
 
   use Application
 
+  require Logger
+
   def start(_type, _args) do
     :prometheus_httpd.start()
+    :nodefinder.multicast_start()
+
+    with [_ | _] <- :net_adm.host_file() do
+      :net_adm.world()
+    else
+      {:error, :enoent} -> Logger.error ".erlang.hosts not found"
+    end
 
     start_task = {Task, :start_link, [fn ->
       Node.list()

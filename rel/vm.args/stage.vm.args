@@ -40,11 +40,5 @@
 # -kernel sync_nodes_otional '["<%= release_name %>@10.50.1.1", "<%= release_name %>@10.50.1.2"]'
 
 -kernel pidfile '"etc/server.pid"'
--kernel inet_dist_listen_min 40001
--kernel inet_dist_listen_max 40100
-
-# ERL_EPMD_ADDRESS=127.0.0.1
-# ERL_EPMD_PORT=8384
-
-# ERL_EPMD_ADDRESS=127.0.0.1
-# ERL_EPMD_PORT=8384
+-kernel inet_dist_listen_min 4001
+-kernel inet_dist_listen_max 4099

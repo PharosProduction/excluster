@@ -38,5 +38,5 @@
 -config etc/hosts.config
 
 -kernel pidfile '"etc/server.pid"'
--kernel inet_dist_listen_min 40001
--kernel inet_dist_listen_max 40100
+-kernel inet_dist_listen_min 4001
+-kernel inet_dist_listen_max 4099
