@@ -31,9 +31,6 @@ defmodule Core.ActionServer do
       [] -> %{value: "some value"}
       restored -> restored
     end
-    IO.puts "INIT ID: #{inspect id}"
-    IO.puts "INIT PARAMS: #{inspect params}"
-    IO.puts "INIT STATE: #{inspect state}"
 
     {:ok, {id, state}}
   end
@@ -45,6 +42,7 @@ defmodule Core.ActionServer do
     %{value: value} = state
     {:reply, value, {id, state}}
   end
+  def handle_call(request, from, state), do: super(request, from, state)
 
   @impl true
   def handle_cast({:write, value}, {id, state}) do
@@ -53,6 +51,7 @@ defmodule Core.ActionServer do
     new_state = put_in(state[:value], value)
     {:noreply, {id, new_state}}
   end
+  def handle_cast(request, state), do: super(request, state)
 
   @impl true
   def terminate(reason, {id, state}) do
