@@ -3,16 +3,18 @@ defmodule Core.ActionServer do
 
   use GenServer, shutdown: 10_000, restart: :permanent
 
-  alias Core.Counters
+  alias Core.{Counters, StateHandoff}
+
+  @registry Core.Registry
 
   # Public
 
-  def child_spec([{:id, id} | params] = args) do
+  def child_spec([{:id, id} | _] = args) do
     start = {__MODULE__, :start_link, [args]}
     %{id: id, start: start}
   end
 
-  def start_link([{:id, id} | params] = args) do 
+  def start_link([{:id, id} | _] = args) do 
     GenServer.start_link(__MODULE__, args, name: via_tuple(id))
   end
 
@@ -23,10 +25,11 @@ defmodule Core.ActionServer do
   # Callbacks
 
   @impl true
-  def init([{:id, id} | params] = args) do
+  def init([{:id, id} | _params]) do
     Process.flag(:trap_exit, true)
 
-    state = Core.StateHandoff.pickup(id)
+    state = id
+    |> StateHandoff.pickup
     |> case do
       [] -> %{value: "some value"}
       restored -> restored
@@ -36,13 +39,12 @@ defmodule Core.ActionServer do
   end
 
   @impl true
-  def handle_call({:read, params}, _from, {id, state}) do
+  def handle_call({:read, _params}, _, {id, state}) do
     Counters.inc_counter(:read)
 
     %{value: value} = state
     {:reply, value, {id, state}}
   end
-  def handle_call(request, from, state), do: super(request, from, state)
 
   @impl true
   def handle_cast({:write, value}, {id, state}) do
@@ -51,15 +53,14 @@ defmodule Core.ActionServer do
     new_state = put_in(state[:value], value)
     {:noreply, {id, new_state}}
   end
-  def handle_cast(request, state), do: super(request, state)
 
   @impl true
-  def terminate(reason, {id, state}) do
-    Core.StateHandoff.handoff(id, state)
+  def terminate(_reason, {id, state}) do
+    StateHandoff.handoff(id, state)
     :ok
   end
 
   # Private
 
-  defp via_tuple(id), do: {:via, Horde.Registry, {Core.Registry, id}}
+  defp via_tuple(id), do: {:via, Horde.Registry, {@registry, id}}
 end

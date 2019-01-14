@@ -1,7 +1,5 @@
 defmodule Core.GlobalCache do
   
-  # Attrs
-  
   @registry Core.Registry
 
   # Public
