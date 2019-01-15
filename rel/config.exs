@@ -14,11 +14,11 @@ use Mix.Releases.Config,
 release :excluster do
   set version: "1.0.0"
   set applications: [
-    :runtime_tools,
-    :sasl,
-    :logger,
-    :observer,
-    :wx,
+    runtime_tools: :transient,
+    sasl: :transient,
+    logger: :transient,
+    observer: :transient,
+    wx: :transient,
     core: :permanent,
     api_mobile: :permanent
   ]

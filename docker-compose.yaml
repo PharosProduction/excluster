@@ -10,7 +10,7 @@ networks:
 x-elixir-def:
   &elixir-def
   build:
-    dockerfile: prod.Dockerfile
+    dockerfile: Prod.Dockerfile
     context: .
 
 services:
@@ -38,8 +38,6 @@ services:
     networks:
       elixir:
         ipv4_address: 10.50.1.2
-    # tty: true
-    # command: ["/bin/bash"]
     command: ["bin/excluster", "foreground"]
 
   elixir-3:
@@ -53,21 +51,4 @@ services:
     networks:
       elixir:
         ipv4_address: 10.50.1.3
-    tty: true
-    command: ["/bin/bash"]
-    # command: ["bin/excluster", "foreground"]
-
-  elixir-4:
-    << : *elixir-def
-    hostname: elixir-4
-    container_name: elixir-4
-    environment:
-      HOSTNAME: 10.50.1.4
-    ports:
-      - '4004:4000'
-    networks:
-      elixir:
-        ipv4_address: 10.50.1.4
-    tty: true
-    command: ["/bin/bash"]
-    # command: ["bin/excluster", "foreground"]
+    command: ["bin/excluster", "foreground"]

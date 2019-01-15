@@ -46,11 +46,12 @@ defmodule ApiMobile.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:plug, "~> 1.7"},
       {:cowboy, "~> 2.6"},
+      {:toml, "~> 0.5"},
       {:prometheus_ex, "~> 3.0"},
       {:prometheus_plugs, "~> 1.1"},
       {:elixir_uuid, "~> 1.2"},
       
-      {:core, in_umbrella: true}
+      {:core, in_umbrella: true, only: [:dev, :test]}
     ]
   end
 end

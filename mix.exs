@@ -39,7 +39,7 @@ defmodule Excluster.MixProject do
 
   defp deps do
     [
-      {:distillery, github: "PharosProduction/distillery", runtime: false},
+      {:distillery, github: "bitwalker/distillery", runtime: false},
       {:ex_doc, "~> 0.19", only: [:dev], runtime: false},
       {:poison, "~> 4.0", only: [:test], override: true},
       {:excoveralls, "~> 0.10", only: [:test]},
