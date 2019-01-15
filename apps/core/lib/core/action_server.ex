@@ -12,6 +12,7 @@ defmodule Core.ActionServer do
   use GenServer, shutdown: 10_000, restart: :permanent
 
   @registry Core.Registry
+  @max_messages 1000
 
   # Public
 
@@ -27,19 +28,20 @@ defmodule Core.ActionServer do
 
   def read(id, params) do
     net_info()
-    GenServer.call(via_tuple(id), {:read, params})
+    call(id, :read, params)
   end
 
   def write(id, value) do
     net_info()
-    GenServer.cast(via_tuple(id), {:write, value})
+    cast(id, :write, value)
   end
 
   # Callbacks
 
   @impl true
   def init([{:id, id} | _params]) do
-    Process.flag(:trap_exit, true)
+    trap_exit()
+    start_pobox(id)
 
     state = id
     |> StateHandoff.pickup
@@ -60,7 +62,7 @@ defmodule Core.ActionServer do
   end
 
   @impl true
-  def handle_cast({:write, value}, {id, state}) do
+  def handle_cast({:post, {:write, value}}, {id, state}) do
     Counters.inc_counter(:write)
 
     new_state = put_in(state[:value], value)
@@ -78,4 +80,12 @@ defmodule Core.ActionServer do
   defp via_tuple(id), do: {:via, Horde.Registry, {@registry, id}}
 
   defp net_info, do: Net.info |> Kernel.inspect |> Logger.debug
+
+  defp trap_exit, do: Process.flag(:trap_exit, true)
+
+  defp start_pobox(id), do: {:ok, _} = :pobox.start_link(via_tuple(id), @max_messages, :stack)
+
+  defp call(id, type, params), do: GenServer.call(via_tuple(id), {type, params})
+  
+  defp cast(id, type, value), do: :pobox.post(via_tuple(id), {type, value})
 end

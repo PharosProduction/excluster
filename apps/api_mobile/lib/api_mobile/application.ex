@@ -7,10 +7,10 @@ defmodule ApiMobile.Application do
 
   alias ApiMobile.Metrics
 
+  # Public
+  
   def start(_type, _args) do
     start_logger()
-    join_world()
-    start_service_discovery()
 
     children = [
       ApiMobileWeb.Endpoint,
@@ -24,15 +24,7 @@ defmodule ApiMobile.Application do
     :ok
   end
 
+  # Private
+
   defp start_logger, do: Metrics.Setup.setup()
-
-  defp join_world do
-    with [_ | _] <- :net_adm.host_file() do
-      :net_adm.world()
-    else
-      {:error, :enoent} -> Logger.error ".erlang.hosts not found"
-    end
-  end
-
-  defp start_service_discovery, do: :nodefinder.multicast_start()
 end
