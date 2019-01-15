@@ -41,16 +41,16 @@ defmodule Core.ActionServer do
   @impl true
   def init([{:id, id} | _params]) do
     trap_exit()
+
+    {:ok, {id, nil}, {:continue, nil}}
+  end
+
+  @impl true
+  def handle_continue(_, {id, _}) do
     start_pobox(id)
+    state = state_restore(id)
 
-    state = id
-    |> StateHandoff.pickup
-    |> case do
-      [] -> %{value: "some value"}
-      restored -> restored
-    end
-
-    {:ok, {id, state}}
+    {:noreply, {id, state}}
   end
 
   @impl true
@@ -76,6 +76,15 @@ defmodule Core.ActionServer do
   end
 
   # Private
+
+  defp state_restore(id) do
+    id
+    |> StateHandoff.pickup
+    |> case do
+      [] -> %{value: "some value"}
+      restored -> restored
+    end
+  end
 
   defp via_tuple(id), do: {:via, Horde.Registry, {@registry, id}}
 
