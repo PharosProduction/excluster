@@ -1,6 +1,8 @@
 defmodule ApiMobileWeb.ActionController do
   @moduledoc false
 
+  require Logger
+
   use ApiMobileWeb, :controller
 
   # Public
