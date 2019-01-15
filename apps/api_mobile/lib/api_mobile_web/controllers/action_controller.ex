@@ -6,25 +6,26 @@ defmodule ApiMobileWeb.ActionController do
   # Public
   
   def start_server(%{assigns: %{version: :v1}} = conn, _params) do
-    Core.start_server()
+    id = UUID.uuid4()
+    |> Core.start_server
 
-    send_resp(conn, :ok, "")
+    send_resp(conn, :ok, inspect(%{id: id}))
   end
 
-  def cast_server(%{assigns: %{version: :v1}} = conn, _params) do
-    Core.cast_server()
+  def read_server(%{assigns: %{version: :v1}} = conn, %{"id" => id}) do
+    resp = Core.read_server(id)
 
-    send_resp(conn, :ok, "")
+    send_resp(conn, :ok, inspect(%{data: resp}))
   end
 
-  def call_server(%{assigns: %{version: :v1}} = conn, _params) do
-    Core.call_server()
+  def write_server(%{assigns: %{version: :v1}} = conn, %{"id" => id, "value" => value}) do
+    Core.write_server(id, value)
 
     send_resp(conn, :ok, "")
   end
 
   def stop_server(%{assigns: %{version: :v1}} = conn, _params) do
-    Core.stop()
+    Core.terminate_node()
     
     send_resp(conn, :ok, "")
   end

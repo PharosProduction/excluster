@@ -1,41 +1,41 @@
 defmodule ApiMobileWeb.ClusterController do
   @moduledoc false
 
-  use ApiMobileWeb, :controller
+  # use ApiMobileWeb, :controller
 
-  alias ApiMobile.Cluster
+  # alias ApiMobile.Cluster
 
   # Public
 
-  @spec hostname(Plug.Conn.t(), map) :: Plug.Conn.t()
-  def hostname(%{assigns: %{version: :v1}} = conn, _params) do
-    {:ok, host_api} = Cluster.hostname()
-    {:ok, host_core} = Core.hostname()
+  # @spec hostname(Plug.Conn.t(), map) :: Plug.Conn.t()
+  # def hostname(%{assigns: %{version: :v1}} = conn, _params) do
+  #   {:ok, host_api} = Cluster.hostname()
+  #   {:ok, host_core} = Core.hostname()
 
-    render(conn, "v1.hostname.json", cluster: %{host_api: host_api, host_core: host_core})
-  end
+  #   render(conn, "v1.hostname.json", cluster: %{host_api: host_api, host_core: host_core})
+  # end
 
-  @spec nodes(Plug.Conn.t(), map) :: Plug.Conn.t()
-  def nodes(%{assigns: %{version: :v1}} = conn, _params) do
-    {:ok, nodes} = Core.node_list()
+  # @spec nodes(Plug.Conn.t(), map) :: Plug.Conn.t()
+  # def nodes(%{assigns: %{version: :v1}} = conn, _params) do
+  #   {:ok, nodes} = Core.node_list()
 
-    render(conn, "v1.nodes.json", cluster: nodes)
-  end
+  #   render(conn, "v1.nodes.json", cluster: nodes)
+  # end
 
-  @spec ping(Plug.Conn.t(), map) :: Plug.Conn.t()
-  def ping(%{assigns: %{version: :v1}} = conn, %{"host" => host}) do
-    resp =
-      host
-      |> String.to_atom()
-      |> Core.ping()
+  # @spec ping(Plug.Conn.t(), map) :: Plug.Conn.t()
+  # def ping(%{assigns: %{version: :v1}} = conn, %{"host" => host}) do
+  #   resp =
+  #     host
+  #     |> String.to_atom()
+  #     |> Core.ping()
 
-    render(conn, "v1.ping.json", cluster: resp)
-  end
+  #   render(conn, "v1.ping.json", cluster: resp)
+  # end
 
-  @spec names(Plug.Conn.t(), map) :: Plug.Conn.t()
-  def names(%{assigns: %{version: :v1}} = conn, _params) do
-    {:ok, names} = Core.names()
+  # @spec names(Plug.Conn.t(), map) :: Plug.Conn.t()
+  # def names(%{assigns: %{version: :v1}} = conn, _params) do
+  #   {:ok, names} = Core.names()
 
-    render(conn, "v1.names.json", cluster: names)
-  end
+  #   render(conn, "v1.names.json", cluster: names)
+  # end
 end

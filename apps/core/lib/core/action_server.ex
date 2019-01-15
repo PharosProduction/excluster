@@ -1,9 +1,15 @@
 defmodule Core.ActionServer do
   @moduledoc false
 
-  use GenServer, shutdown: 10_000, restart: :permanent
+  require Logger
 
-  alias Core.{Counters, StateHandoff}
+  alias Core.{
+    Counters, 
+    StateHandoff, 
+    Net
+  }
+
+  use GenServer, shutdown: 10_000, restart: :permanent
 
   @registry Core.Registry
 
@@ -15,12 +21,19 @@ defmodule Core.ActionServer do
   end
 
   def start_link([{:id, id} | _] = args) do 
+    net_info()
     GenServer.start_link(__MODULE__, args, name: via_tuple(id))
   end
 
-  def read(id, params), do: GenServer.call(via_tuple(id), {:read, params})
+  def read(id, params) do
+    net_info()
+    GenServer.call(via_tuple(id), {:read, params})
+  end
 
-  def write(id, value), do: GenServer.cast(via_tuple(id), {:write, value})
+  def write(id, value) do
+    net_info()
+    GenServer.cast(via_tuple(id), {:write, value})
+  end
 
   # Callbacks
 
@@ -63,4 +76,6 @@ defmodule Core.ActionServer do
   # Private
 
   defp via_tuple(id), do: {:via, Horde.Registry, {@registry, id}}
+
+  defp net_info, do: Net.info |> Kernel.inspect |> Logger.debug
 end
