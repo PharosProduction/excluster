@@ -13,6 +13,7 @@ defmodule Core.Application do
     start_service_discovery()
 
     children = [
+      {Core.StoreServer, []},
       {Core.StateHandoff, []},
       {Horde.Registry, [name: Core.Registry, keys: :unique]},
       {Horde.Supervisor, [name: Core.ActionSupervisor, strategy: :one_for_one]},

@@ -9,7 +9,7 @@ defmodule Core.ActionServer do
     Net
   }
 
-  use GenServer, shutdown: 10_000, restart: :permanent
+  use GenServer, restart: :permanent, shutdown: 10_000
 
   @registry Core.Registry
   @max_messages 1000

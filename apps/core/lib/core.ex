@@ -1,15 +1,27 @@
 defmodule Core do
   @moduledoc false
 
+  alias Core.{
+    ActionSupervisor,
+    ActionServer,
+    StoreServer
+  }
+
+  # Public
+
   def start_server(id) do
     args = [id: id, arg1: "arg1", arg2: "arg2"]
-    Horde.Supervisor.start_child(Core.ActionSupervisor, {Core.ActionServer, args})
+    Horde.Supervisor.start_child(ActionSupervisor, {ActionServer, args})
     id
   end
 
-  def read_server(id, param \\ nil), do: Core.ActionServer.read(id, param)
+  def read_server(id, params \\ nil), do: ActionServer.read(id, params)
 
-  def write_server(id, value), do: Core.ActionServer.write(id, value)
+  def write_server(id, value), do: ActionServer.write(id, value)
+
+  def pop_server(params \\ nil), do: StoreServer.pop(params)
+
+  def push_server(value), do: StoreServer.push(value)
 
   def terminate_node, do: :init.stop()
 end

@@ -24,6 +24,9 @@ defmodule ApiMobileWeb.Router do
     post "/write", ActionController, :write_server
     post "/stop", ActionController, :stop_server
 
+    get "/pop", StoreController, :pop_server
+    post "/push", StoreController, :push_server
+
     get "/hostname", ClusterController, :hostname
     get "/nodes", ClusterController, :nodes
     post "/ping", ClusterController, :ping
