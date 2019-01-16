@@ -14,6 +14,7 @@ defmodule Core.Application do
     start_service_discovery()
 
     children = [
+      {DynamicSupervisor, strategy: :one_for_one, name: Core.DynamicSupervisor},
       {Core.StoreServer, []},
       {Core.StateHandoff, []},
       {Horde.Registry, [name: Core.Registry, keys: :unique]},
