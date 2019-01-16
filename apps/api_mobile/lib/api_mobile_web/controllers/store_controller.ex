@@ -13,6 +13,12 @@ defmodule ApiMobileWeb.StoreController do
     send_resp(conn, :ok, inspect(%{data: resp}))
   end
 
+  def pop_server_long(%{assigns: %{version: :v1}} = conn, _params) do
+    resp = Core.pop_server_long()
+
+    send_resp(conn, :ok, inspect(%{data: resp}))
+  end
+
   def push_server(%{assigns: %{version: :v1}} = conn, %{"value" => value}) do
     Core.push_server(value)
 

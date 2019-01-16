@@ -21,6 +21,8 @@ defmodule Core do
 
   def pop_server(params \\ nil), do: StoreServer.pop(params)
 
+  def pop_server_long(value \\ nil), do: StoreServer.pop_long(value)
+
   def push_server(value), do: StoreServer.push(value)
 
   def terminate_node, do: :init.stop()

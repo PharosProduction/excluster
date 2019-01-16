@@ -18,6 +18,8 @@ defmodule Core.StoreServer do
 
   def pop(params \\ nil), do: GenServer.multi_call(__MODULE__, {:read, params})
 
+  def pop_long(params \\ nil), do: GenServer.multi_call(__MODULE__, {:read_long, params})
+
   def push(value), do: GenServer.abcast(__MODULE__, {:write, value})
 
   # Callbacks
@@ -41,6 +43,13 @@ defmodule Core.StoreServer do
     %{value: value} = state
     {:reply, value, state}
   end
+  def handle_call({:read_long, params}, from, state) do
+    net_info()
+
+    Process.send(__MODULE__, {:read_long, from, params}, [:noconnect, :nosuspend])
+
+    {:noreply, state}
+  end
 
   @impl true
   def handle_cast({:write, value}, state) do
@@ -48,6 +57,14 @@ defmodule Core.StoreServer do
 
     new_state = put_in(state[:value], value)
     {:noreply, new_state}
+  end
+
+  @impl true
+  def handle_info({:read_long, from, _params}, state) do
+    :timer.sleep(5_000)
+    GenServer.reply(from, state)
+
+    {:noreply, state}
   end
 
   # Private
