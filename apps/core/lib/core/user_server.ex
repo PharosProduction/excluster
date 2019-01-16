@@ -36,6 +36,10 @@ defmodule Core.UserServer do
     end
   end
 
+  def whereis(id), do: GenServer.whereis(id)
+
+  def stop(id), do: GenServer.stop(id, :normal)
+
   # Callbacks
 
   @impl true
