@@ -26,8 +26,14 @@ defmodule ApiMobileWeb.ActionController do
     send_resp(conn, :ok, "")
   end
 
-  def stop_server(%{assigns: %{version: :v1}} = conn, _params) do
-    Core.terminate_node()
+  def get_sys(%{assigns: %{version: :v1}} = conn, %{"id" => id}) do
+    resp = Core.get_sys(id)
+
+    send_resp(conn, :ok, inspect(%{data: resp}))
+  end
+
+  def stop_server(%{assigns: %{version: :v1}} = conn, %{"id" => id}) do
+    Core.stop_server(id)
     
     send_resp(conn, :ok, "")
   end

@@ -22,6 +22,7 @@ defmodule ApiMobileWeb.Router do
     get "/start", ActionController, :start_server
     get "/read", ActionController, :read_server
     post "/write", ActionController, :write_server
+    get "/sys", ActionController, :get_sys
     post "/stop", ActionController, :stop_server
 
     get "/pop", StoreController, :pop_server

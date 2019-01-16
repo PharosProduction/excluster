@@ -12,6 +12,7 @@ defmodule Core.ActionServer do
   @registry Core.Registry
   @max_messages 1_000
   @shutdown 10_000
+  @hibernate 60_000
 
   use GenServer, restart: :permanent, shutdown: @shutdown
 
@@ -27,7 +28,7 @@ defmodule Core.ActionServer do
 
     opts = [
       name: via_tuple(id), 
-      hibernate_after: 1_000 * 60
+      hibernate_after: @hibernate
     ]
     with {:ok, pid} <- GenServer.start_link(__MODULE__, args, opts) do
       :sys.statistics(pid, true)

@@ -5,7 +5,7 @@ defmodule Core.StoreServer do
 
   alias Core.Net
 
-  use GenServer, restart: :permanent, shutdown: 5_000
+  use GenServer, restart: :permanent, shutdown: 10_000
 
   @max_messages 1000
 
