@@ -9,10 +9,11 @@ defmodule Core.ActionServer do
     Net
   }
 
-  use GenServer, restart: :permanent, shutdown: 10_000
-
   @registry Core.Registry
-  @max_messages 1000
+  @max_messages 1_000
+  @shutdown 10_000
+
+  use GenServer, restart: :permanent, shutdown: @shutdown
 
   # Public
 
@@ -23,7 +24,19 @@ defmodule Core.ActionServer do
 
   def start_link([{:id, id} | _] = args) do 
     net_info()
-    GenServer.start_link(__MODULE__, args, name: via_tuple(id))
+
+    opts = [
+      name: via_tuple(id), 
+      hibernate_after: 1_000 * 60
+    ]
+    with {:ok, pid} <- GenServer.start_link(__MODULE__, args, opts) do
+      :sys.statistics(pid, true)
+      :sys.trace(pid, true)
+
+      {:ok, pid}
+    else
+      other -> other
+    end
   end
 
   def read(id, params) do
@@ -35,6 +48,10 @@ defmodule Core.ActionServer do
     net_info()
     cast(id, :write, value)
   end
+
+  def whereis(id), do: GenServer.whereis(via_tuple(id))
+
+  def stop(id), do: GenServer.stop(via_tuple(id), :normal)
 
   # Callbacks
 
@@ -70,7 +87,8 @@ defmodule Core.ActionServer do
   end
 
   @impl true
-  def terminate(_reason, {id, state}) do
+  def terminate(reason, {id, state}) do
+    Logger.debug("Terminating #{inspect id} with reason #{inspect reason}")
     StateHandoff.handoff(id, state)
     :ok
   end
