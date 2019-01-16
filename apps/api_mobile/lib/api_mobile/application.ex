@@ -1,14 +1,15 @@
 defmodule ApiMobile.Application do
   @moduledoc false
 
-  use Application
-
   require Logger
 
   alias ApiMobile.Metrics
-
-  # Public
   
+  use Application
+
+  # Callbacks
+  
+  @impl true
   def start(_type, _args) do
     start_logger()
 
@@ -19,9 +20,20 @@ defmodule ApiMobile.Application do
     Supervisor.start_link(children, opts)
   end
 
+  @impl true
   def config_change(changed, _new, removed) do
     ApiMobileWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  @impl true
+  def prep_stop(state) do
+    Logger.debug("PrepStop: #{inspect state}")
+  end
+
+  @impl true
+  def stop(state) do
+    Logger.debug("Stop: #{inspect state}")
   end
 
   # Private

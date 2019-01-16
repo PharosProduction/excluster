@@ -5,8 +5,9 @@ defmodule Core.Application do
 
   require Logger
 
-  # Public
+  # Callbacks
   
+  @impl true
   def start(_type, _args) do
     start_logger()
     join_world()
@@ -21,6 +22,16 @@ defmodule Core.Application do
     ]
     opts = [strategy: :one_for_one, name: Core.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  @impl true
+  def prep_stop(state) do
+    Logger.debug("PrepStop: #{inspect state}")
+  end
+
+  @impl true
+  def stop(state) do
+    Logger.debug("Stop: #{inspect state}")
   end
 
   # Private
