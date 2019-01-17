@@ -46,6 +46,8 @@ defmodule Core.MixProject do
   defp deps do
     [
       {:horde, "~> 0.4.0-rc.2"},
+      {:gproc, "~> 0.8"},
+      {:gen_leader, "~> 0.1"},
       {:nodefinder, github: "PharosProduction/nodefinder"},
       {:nebulex, "~> 1.0"},
       {:pobox, "~> 1.2"},

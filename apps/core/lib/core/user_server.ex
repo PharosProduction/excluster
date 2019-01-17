@@ -1,16 +1,13 @@
 defmodule Core.UserServer do
   @moduledoc false
 
-  alias Core.{
-    Net
-  }
+  alias Core.Net
 
   require Logger
 
-  @shutdown 10_000
   @hibernate 60_000
 
-  use GenServer, restart: :transient, shutdown: @shutdown
+  @behaviour :gen_statem
 
   # Public
 
@@ -23,10 +20,10 @@ defmodule Core.UserServer do
     net_info()
 
     opts = [
-      name: id, 
+      name: via(id),
       hibernate_after: @hibernate
     ]
-    with {:ok, pid} <- GenServer.start_link(__MODULE__, args, opts) do
+    with {:ok, pid} <- :gen_statem.start_link(__MODULE__, args, opts) do
       :sys.statistics(pid, true)
       :sys.trace(pid, true)
 
@@ -36,18 +33,47 @@ defmodule Core.UserServer do
     end
   end
 
-  def whereis(id), do: GenServer.whereis(id)
+  def get_value(id) do
+    :gen_statem.call(via(id), :call)
+  end
 
-  def stop(id), do: GenServer.stop(id, :normal)
+  def set_value(id, value) do
+    :gen_statem.cast(via(id), {:value, value})
+  end
+
+  # def whereis(id), do: :gen_statem.whereis(id)
+
+  # def stop(id), do: :gen_statem.stop(id, :normal)
 
   # Callbacks
 
   @impl true
-  def init([{:id, _id} | _params]) do
-    {:ok, nil}
+  def init([{:id, id} | params] = args) do
+    IO.puts "INIT: :unregistered, #{inspect args}"
+    :gproc.reg(topic(id))
+    
+    {:ok, :unregistered, {id, params}}
   end
 
+  @impl true
+  def handle_event({:call, from}, :is_registered, state, data) do
+    IO.puts "EVENT CALL: :is_registered, STATE: #{inspect state}, DATA: #{inspect data}"
+    actions = [{:reply, from, data}]
+    {:keep_state, data, actions}
+  end
+  def handle_event(:cast, {:value, value}, state, data) do
+    IO.puts "EVENT CAST: #{inspect value}, STATE: #{inspect state}, DATA: #{inspect data}"
+    {:keep_state, value}
+  end
+
+  @impl true
+  def callback_mode, do: :handle_event_function
+
   # Private
+
+  defp via(id), do: {:via, :gproc, topic(id)}
+
+  defp topic(id), do: {:p, :g, {:user_server, id}}
 
   defp net_info, do: Net.info |> Kernel.inspect |> Logger.debug
 end

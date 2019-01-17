@@ -27,7 +27,7 @@ defmodule Core.ActionServer do
     net_info()
 
     opts = [
-      name: via_tuple(id), 
+      name: via(id), 
       hibernate_after: @hibernate
     ]
     with {:ok, pid} <- GenServer.start_link(__MODULE__, args, opts) do
@@ -50,9 +50,9 @@ defmodule Core.ActionServer do
     cast(id, :write, value)
   end
 
-  def whereis(id), do: GenServer.whereis(via_tuple(id))
+  def whereis(id), do: GenServer.whereis(via(id))
 
-  def stop(id), do: GenServer.stop(via_tuple(id), :normal)
+  def stop(id), do: GenServer.stop(via(id), :normal)
 
   # Callbacks
 
@@ -105,15 +105,15 @@ defmodule Core.ActionServer do
     end
   end
 
-  defp via_tuple(id), do: {:via, Horde.Registry, {@registry, id}}
+  defp via(id), do: {:via, Horde.Registry, {@registry, id}}
 
   defp net_info, do: Net.info |> Kernel.inspect |> Logger.debug
 
   defp trap_exit, do: Process.flag(:trap_exit, true)
 
-  defp start_pobox(id), do: {:ok, _} = :pobox.start_link(via_tuple(id), @max_messages, :stack)
+  defp start_pobox(id), do: {:ok, _} = :pobox.start_link(via(id), @max_messages, :stack)
 
-  defp call(id, type, params), do: GenServer.call(via_tuple(id), {type, params})
+  defp call(id, type, params), do: GenServer.call(via(id), {type, params})
   
-  defp cast(id, type, value), do: :pobox.post(via_tuple(id), {type, value})
+  defp cast(id, type, value), do: :pobox.post(via(id), {type, value})
 end

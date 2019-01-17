@@ -29,7 +29,7 @@ RUN mkdir /opt/excluster \
   && tar xvzf ./_build/prod/rel/excluster/releases/1.0.0/excluster.tar.gz -C /opt/excluster
 WORKDIR /opt/excluster
 RUN rm -rf /opt/excluster_build
-COPY ./rel/config/hosts.config ./etc/hosts.config
+COPY ./rel/config/erl.config ./etc/erl.config
 COPY ./rel/config/.hosts.erlang ./.hosts.erlang
 
 CMD ["/bin/bash"]
