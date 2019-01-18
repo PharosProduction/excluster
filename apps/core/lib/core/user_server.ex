@@ -35,7 +35,6 @@ defmodule Core.UserServer do
 
   def get_value(id) do
     [pid | _] = :gproc.lookup_pids(topic(id))
-    IO.puts "AAA: #{inspect pid}"
     :gen_statem.call(pid, :read)
   end
 
@@ -44,28 +43,26 @@ defmodule Core.UserServer do
     :gen_statem.cast(pid, {:write, value})
   end
 
-  # def whereis(id), do: :gen_statem.whereis(id)
-
-  # def stop(id), do: :gen_statem.stop(id, :normal)
+  def stop(id) do
+    [pid | _] = :gproc.lookup_pids(topic(id))
+    :gen_statem.stop(pid)
+  end
 
   # Callbacks
 
   @impl true
   def init([{:id, id} | params] = args) do
-    IO.puts "INIT: :unregistered, #{inspect args}"
     :gproc.reg(topic(id))
     
-    {:ok, nil, {id, params}}
+    {:ok, :init_state, {id, params}}
   end
 
   @impl true
-  def handle_event({:call, from}, :read, state, data) do
-    IO.puts "EVENT CALL: :read, DATA: #{inspect data}"
+  def handle_event({:call, from}, :read = params, state, data) do
     actions = [{:reply, from, data}]
     {:keep_state, data, actions}
   end
-  def handle_event(:cast, {:write, value}, state, data) do
-    IO.puts "EVENT CAST: #{inspect value}, STATE: #{inspect state}, DATA: #{inspect data}"
+  def handle_event(:cast, {:write, value} = params, state, data) do
     {:keep_state, value}
   end
 
