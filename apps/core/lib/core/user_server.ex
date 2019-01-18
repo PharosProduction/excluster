@@ -13,7 +13,7 @@ defmodule Core.UserServer do
 
   def child_spec([{:id, id} | _] = args) do
     start = {__MODULE__, :start_link, [args]}
-    %{id: id, start: start}
+    %{id: id, start: start, restart: :transient, type: :worker}
   end
 
   def start_link([{:id, id} | _params] = args) do 
@@ -33,14 +33,14 @@ defmodule Core.UserServer do
     end
   end
 
-  def get_value(id) do
+  def state(id) do
     [pid | _] = :gproc.lookup_pids(topic(id))
-    :gen_statem.call(pid, :read)
+    :gen_statem.call(pid, :get_state)
   end
 
-  def set_value(id, value) do
+  def authenticated(id, token \\ "123qweasdzxc") do
     [pid | _] = :gproc.lookup_pids(topic(id))
-    :gen_statem.cast(pid, {:write, value})
+    :gen_statem.cast(pid, {:authenticated, %{token: token}})
   end
 
   def stop(id) do
@@ -51,19 +51,31 @@ defmodule Core.UserServer do
   # Callbacks
 
   @impl true
-  def init([{:id, id} | params] = args) do
+  def init([{:id, id} | _params] = args) do
     :gproc.reg(topic(id))
-    
-    {:ok, :init_state, {id, params}}
+
+    actions = [{:timeout, 1_000 * 60 * 10, :make_outdated}]
+    data = %{
+      first_name: "John",
+      last_name: "Doe",
+      token: nil
+    }
+    {:ok, :unregistered, {id, data}, actions}
   end
 
   @impl true
-  def handle_event({:call, from}, :read = params, state, data) do
-    actions = [{:reply, from, data}]
-    {:keep_state, data, actions}
+  def handle_event({:call, from}, :get_state, state, {id, data}) do
+    actions = [{:reply, from, {state, id, data}}]
+
+    {:keep_state, {id, data}, actions}
   end
-  def handle_event(:cast, {:write, value} = params, state, data) do
-    {:keep_state, value}
+  def handle_event(:cast, {:authenticated, %{token: token}}, state, {id, data}) do
+    new_data = put_in(data[:token], token)
+
+    {:next_state, :authenticated, {id, new_data}}
+  end
+  def handle_event(:timeout, :make_outdated, state, data) do
+    {:stop, :normal, data}
   end
 
   @impl true

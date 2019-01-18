@@ -1,8 +1,6 @@
 defmodule Core.UserSupervisor do
   @moduledoc false
 
-  alias Core.UserServer
-
   use DynamicSupervisor
 
   # Public
@@ -15,10 +13,6 @@ defmodule Core.UserSupervisor do
     spec = {Core.UserServer, [{:id, id} | args]}
     DynamicSupervisor.start_child(__MODULE__, spec)
   end
-
-  def get_value(id), do: UserServer.get_value(id)
-
-  def set_value(id, value), do: UserServer.set_value(id, value)
 
   # Callbacks
 
