@@ -34,11 +34,14 @@ defmodule Core.UserServer do
   end
 
   def get_value(id) do
-    :gen_statem.call(via(id), :call)
+    [pid | _] = :gproc.lookup_pids(topic(id))
+    IO.puts "AAA: #{inspect pid}"
+    :gen_statem.call(pid, :read)
   end
 
   def set_value(id, value) do
-    :gen_statem.cast(via(id), {:value, value})
+    [pid | _] = :gproc.lookup_pids(topic(id))
+    :gen_statem.cast(pid, {:write, value})
   end
 
   # def whereis(id), do: :gen_statem.whereis(id)
@@ -52,16 +55,16 @@ defmodule Core.UserServer do
     IO.puts "INIT: :unregistered, #{inspect args}"
     :gproc.reg(topic(id))
     
-    {:ok, :unregistered, {id, params}}
+    {:ok, nil, {id, params}}
   end
 
   @impl true
-  def handle_event({:call, from}, :is_registered, state, data) do
-    IO.puts "EVENT CALL: :is_registered, STATE: #{inspect state}, DATA: #{inspect data}"
+  def handle_event({:call, from}, :read, state, data) do
+    IO.puts "EVENT CALL: :read, DATA: #{inspect data}"
     actions = [{:reply, from, data}]
     {:keep_state, data, actions}
   end
-  def handle_event(:cast, {:value, value}, state, data) do
+  def handle_event(:cast, {:write, value}, state, data) do
     IO.puts "EVENT CAST: #{inspect value}, STATE: #{inspect state}, DATA: #{inspect data}"
     {:keep_state, value}
   end
@@ -70,7 +73,7 @@ defmodule Core.UserServer do
   def callback_mode, do: :handle_event_function
 
   # Private
-
+ 
   defp via(id), do: {:via, :gproc, topic(id)}
 
   defp topic(id), do: {:p, :g, {:user_server, id}}

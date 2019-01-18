@@ -70,3 +70,5 @@ data
 pgdata
 cover
 *.dot
+
+gproc_dist_*
