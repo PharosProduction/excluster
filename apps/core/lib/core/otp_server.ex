@@ -82,17 +82,18 @@ defmodule Core.OtpServer do
   @impl true
   def init([{:id, id} | _params]) do
     :gproc.reg(topic(id))
-
-    actions = [{:timeout, 1_000 * 5, :expired}]
-    {:ok, :ready, id, actions}
+    
+    {:ok, :ready, id, []}
   end
 
   def ready({:call, from}, :get_state, _), do: {:keep_state_and_data, {:reply, from, :ready}}
   def ready({:call, from}, :request_code, data) do
-    {:next_state, :code_requested, data, {:reply, from, "1435"}}
-  end
-  def ready(:timeout, :expired, data) do
-    IO.puts "TIMEOUT: #{inspect state}   #{inspect data}"
+    actions = [
+      {:state_timeout, 1_000 * 20, :code_expired},
+      {:reply, from, "1435"}
+    ]
+
+    {:next_state, :code_requested, data, actions}
   end
   def ready({:call, from}, _, _), do: {:keep_state_and_data, {:reply, from, :not_allowed}}
 
@@ -100,10 +101,16 @@ defmodule Core.OtpServer do
   def code_requested({:call, from}, :authorize_code, data) do
     {:next_state, :code_authorized, data, {:reply, from, :ok}}
   end
+  def code_requested(:state_timeout, :code_expired, data) do
+    {:next_state, :code_expired, data}
+  end
   def code_requested({:call, from}, _, _), do: {:keep_state_and_data, {:reply, from, :not_allowed}}
 
   def code_authorized({:call, from}, :get_state, _), do: {:keep_state_and_data, {:reply, from, :code_authorized}}
   def code_authorized({:call, from}, _, _), do: {:keep_state_and_data, {:reply, from, :not_allowed}}
+
+  def code_expired({:call, from}, :get_state, _), do: {:keep_state_and_data, {:reply, from, :code_expired}}
+  def code_expired({:call, from}, _, _), do: {:keep_state_and_data, {:reply, from, :not_allowed}}
 
   @impl true
   def callback_mode, do: :state_functions
