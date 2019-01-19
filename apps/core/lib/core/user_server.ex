@@ -12,8 +12,12 @@ defmodule Core.UserServer do
   # Public
 
   def child_spec([{:id, id} | _] = args) do
-    start = {__MODULE__, :start_link, [args]}
-    %{id: id, start: start, restart: :transient, type: :worker}
+    %{
+      id: id, 
+      start: {__MODULE__, :start_link, [args]}, 
+      restart: :transient, 
+      type: :worker
+    }
   end
 
   def start_link([{:id, id} | _params] = args) do 
@@ -25,7 +29,7 @@ defmodule Core.UserServer do
     ]
     with {:ok, pid} <- :gen_statem.start_link(__MODULE__, args, opts) do
       :sys.statistics(pid, true)
-      :sys.trace(pid, true)
+      # :sys.trace(pid, true)
 
       {:ok, pid}
     else
@@ -33,17 +37,23 @@ defmodule Core.UserServer do
     end
   end
 
-  def state(id) do
+  def get_state(id) do
+    net_info()
+
     [pid | _] = :gproc.lookup_pids(topic(id))
     :gen_statem.call(pid, :get_state)
   end
 
   def authenticated(id, token \\ "123qweasdzxc") do
+    net_info()
+
     [pid | _] = :gproc.lookup_pids(topic(id))
     :gen_statem.cast(pid, {:authenticated, %{token: token}})
   end
 
   def stop(id) do
+    net_info()
+
     [pid | _] = :gproc.lookup_pids(topic(id))
     :gen_statem.stop(pid)
   end
@@ -51,7 +61,7 @@ defmodule Core.UserServer do
   # Callbacks
 
   @impl true
-  def init([{:id, id} | _params] = args) do
+  def init([{:id, id} | _params]) do
     :gproc.reg(topic(id))
 
     actions = [{:timeout, 1_000 * 60 * 10, :make_outdated}]
@@ -69,12 +79,12 @@ defmodule Core.UserServer do
 
     {:keep_state, {id, data}, actions}
   end
-  def handle_event(:cast, {:authenticated, %{token: token}}, state, {id, data}) do
+  def handle_event(:cast, {:authenticated, %{token: token}}, _, {id, data}) do
     new_data = put_in(data[:token], token)
 
     {:next_state, :authenticated, {id, new_data}}
   end
-  def handle_event(:timeout, :make_outdated, state, data) do
+  def handle_event(:timeout, :make_outdated, _, data) do
     {:stop, :normal, data}
   end
 

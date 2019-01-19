@@ -15,6 +15,7 @@ defmodule Core.Application do
 
     children = [
       {DynamicSupervisor, strategy: :one_for_one, name: Core.UserSupervisor},
+      {DynamicSupervisor, strategy: :one_for_one, name: Core.OtpSupervisor},
       {Core.StoreServer, []},
       {Core.StateHandoff, []},
       {Horde.Registry, [name: Core.Registry, keys: :unique]},
