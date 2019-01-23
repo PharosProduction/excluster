@@ -12,7 +12,9 @@
 # +S 2:2
 ## +zdbbl 8192
 
--heart
+-heart 
+-env HEART_BEAT_TIMEOUT 30
+
 -smp auto
 
 # -start_epmd {{start_epmd}}
