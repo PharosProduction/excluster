@@ -1,0 +1,10 @@
+{application,gen_leader,
+             [{description,"The gen_leader behaviour"},
+              {vsn,"0.1.0"},
+              {modules,[gen_leader]},
+              {registered,[]},
+              {applications,[kernel,stdlib]},
+              {maintainers,["knusbaum <KyleJNusbaum@gmail.com>"]},
+              {licenses,["MIT/Expat"]},
+              {links,[{"GitHub",
+                       "https://github.com/knusbaum/gen_leader_revival"}]}]}.

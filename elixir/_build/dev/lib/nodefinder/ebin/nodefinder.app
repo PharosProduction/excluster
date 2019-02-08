@@ -1,0 +1,13 @@
+{application,nodefinder,
+             [{applications,[kernel,stdlib,inets,xmerl,crypto,public_key,ssl]},
+              {description,"Strategies For Automatic Node Discovery"},
+              {modules,[nodefinder,nodefinder_app,nodefinder_ec2,
+                        nodefinder_ec2_api,nodefinder_ec2_api_aws,
+                        nodefinder_ec2_api_http,nodefinder_ec2_api_httpc,
+                        nodefinder_ec2_api_xml,nodefinder_multicast,
+                        nodefinder_string,nodefinder_sup]},
+              {vsn,"1.7.5"},
+              {mod,{nodefinder_app,[]}},
+              {registered,[nodefinder_ec2,nodefinder_multicast,
+                           nodefinder_sup]},
+              {env,[{node_type,visible}]}]}.
