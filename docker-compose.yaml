@@ -7,23 +7,23 @@ networks:
       config:
         - subnet: 10.50.0.0/16
 
-x-zookeeper-def:
-  &zookeeper-def
-  build:
-    dockerfile: Dockerfile
-    context: ./zookeeper
-  ports:
-    - "2181:2181"
+# x-zookeeper-def:
+#   &zookeeper-def
+#   build:
+#     dockerfile: Dockerfile
+#     context: ./zookeeper
+#   ports:
+#     - "2181:2181"
 
-x-kafka-def:
-  &kafka-def
-  build:
-    dockerfile: Dockerfile
-    context: ./kafka
-  depends_on:
-    - zookeeper
-  volumes:
-    - /var/run/docker.sock:/var/run/docker.sock
+# x-kafka-def:
+#   &kafka-def
+#   build:
+#     dockerfile: Dockerfile
+#     context: ./kafka
+#   depends_on:
+#     - zookeeper
+#   volumes:
+#     - /var/run/docker.sock:/var/run/docker.sock
 
 x-elixir-def:
   &elixir-def
@@ -32,34 +32,35 @@ x-elixir-def:
     context: ./elixir
 
 services:
-  zookeeper:
-    << : *zookeeper-def
-    hostname: zookeeper
-    container_name: zookeeper
-    networks:
-      excluster:
-        ipv4_address: 10.50.1.1
 
-  standalone:
-    image: apachepulsar/pulsar
-    expose:
-      - 8080
-      - 6650 
-    environment:
-      - PULSAR_MEM=" -Xms512m -Xmx512m -XX:MaxDirectMemorySize=1g"
-    command: >
-      /bin/bash -c
-      "bin/apply-config-from-env.py conf/standalone.conf
-      && bin/pulsar standalone"
+  # zookeeper:
+  #   << : *zookeeper-def
+  #   hostname: zookeeper
+  #   container_name: zookeeper
+  #   networks:
+  #     excluster:
+  #       ipv4_address: 10.50.1.1
 
-  dashboard:
-    image: apachepulsar/pulsar-dashboard
-    depends_on:
-      - standalone
-    ports:
-      - "80:80"
-    environment:
-      - SERVICE_URL=http://standalone:8080
+  # standalone:
+  #   image: apachepulsar/pulsar
+  #   expose:
+  #     - 8080
+  #     - 6650 
+  #   environment:
+  #     - PULSAR_MEM=" -Xms512m -Xmx512m -XX:MaxDirectMemorySize=1g"
+  #   command: >
+  #     /bin/bash -c
+  #     "bin/apply-config-from-env.py conf/standalone.conf
+  #     && bin/pulsar standalone"
+
+  # dashboard:
+  #   image: apachepulsar/pulsar-dashboard
+  #   depends_on:
+  #     - standalone
+  #   ports:
+  #     - "80:80"
+  #   environment:
+  #     - SERVICE_URL=http://standalone:8080
 
   # kafka-1:
   #   << : *kafka-def
@@ -103,41 +104,43 @@ services:
   #     excluster:
   #       ipv4_address: 10.50.2.3
 
-  # elixir-1:
-  #   << : *elixir-def
-  #   hostname: elixir-1
-  #   container_name: elixir-1
-  #   environment:
-  #     HOSTNAME: 10.50.3.1
-  #   ports:
-  #     - '4001:4000'
-  #   networks:
-  #     excluster:
-  #       ipv4_address: 10.50.3.1
-  #   command: ["bin/excluster", "foreground"]
+  elixir-1:
+    << : *elixir-def
+    hostname: elixir-1
+    container_name: elixir-1
+    environment:
+      HOSTNAME: 10.50.3.1
+    ports:
+      - '4001:4000'
+    networks:
+      excluster:
+        ipv4_address: 10.50.3.1
+    tty: true
+    command: ["bin/excluster", "foreground"]
+    # command: ["/bin/bash"]
 
-  # elixir-2:
-  #   << : *elixir-def
-  #   hostname: elixir-2
-  #   container_name: elixir-2
-  #   environment:
-  #     HOSTNAME: 10.50.3.2
-  #   ports:
-  #     - '4002:4000'
-  #   networks:
-  #     excluster:
-  #       ipv4_address: 10.50.3.2
-  #   command: ["bin/excluster", "foreground"]
+  elixir-2:
+    << : *elixir-def
+    hostname: elixir-2
+    container_name: elixir-2
+    environment:
+      HOSTNAME: 10.50.3.2
+    ports:
+      - '4002:4000'
+    networks:
+      excluster:
+        ipv4_address: 10.50.3.2
+    command: ["bin/excluster", "foreground"]
 
-  # elixir-3:
-  #   << : *elixir-def
-  #   hostname: elixir-3
-  #   container_name: elixir-3
-  #   environment:
-  #     HOSTNAME: 10.50.3.3
-  #   ports:
-  #     - '4003:4000'
-  #   networks:
-  #     excluster:
-  #       ipv4_address: 10.50.3.3
-  #   command: ["bin/excluster", "foreground"]
+  elixir-3:
+    << : *elixir-def
+    hostname: elixir-3
+    container_name: elixir-3
+    environment:
+      HOSTNAME: 10.50.3.3
+    ports:
+      - '4003:4000'
+    networks:
+      excluster:
+        ipv4_address: 10.50.3.3
+    command: ["bin/excluster", "foreground"]

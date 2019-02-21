@@ -1,6 +1,8 @@
 defmodule Pulsar.Consumer do
   use WebSockex
 
+  require Logger
+
   # bin/pulsar standalone --advertised-address 127.0.0.1
   def start_link do
     url = "ws://127.0.0.1:8080/ws/v2/consumer/persistent/public/default/test-topic/shared"

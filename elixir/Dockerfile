@@ -1,4 +1,4 @@
-FROM elixir:1.7.4-alpine as builder
+FROM elixir:1.8.1-alpine as builder
 
 LABEL company="Pharos Production Inc."
 LABEL version="1.0.0"
@@ -7,7 +7,7 @@ ENV LANG C.UTF-8 \
   REFRESHED_AT 2019-01-04-1 \
   TERM xterm \
   DEBIAN_FRONTEND noninteractive
-ENV ELIXIR_VERSION v1.7.4
+ENV ELIXIR_VERSION v1.8.1
 
 RUN apk add --update \
   git \
@@ -36,7 +36,7 @@ CMD ["/bin/bash"]
 
 #############################################################
 
-FROM alpine:3.8
+FROM alpine:3.9
 
 LABEL company="Pharos Production Inc."
 LABEL version="1.0.0"
